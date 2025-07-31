@@ -1,0 +1,46 @@
+// This file is used by Prisma to define the database schema and generate the client.
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id            String    @id @default(cuid())
+  name          String?
+  email         String    @unique
+  imageUrl      String?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  properties    Property[]
+  bookings      Booking[]
+}
+
+model Property {
+  id          String   @id @default(cuid())
+  title       String
+  description String
+  price       Float
+  location    String
+  images      String[]
+  userId      String
+  user        User     @relation(fields: [userId], references: [id])
+  bookings    Booking[]
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Booking {
+  id          String   @id @default(cuid())
+  startDate   DateTime
+  endDate     DateTime
+  totalPrice  Float
+  userId      String
+  propertyId  String
+  user        User     @relation(fields: [userId], references: [id])
+  property    Property @relation(fields: [propertyId], references: [id])
+  createdAt   DateTime @default(now())
+}
